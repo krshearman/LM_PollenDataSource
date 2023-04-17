@@ -1,0 +1,427 @@
+{
+  "santabaRelease": 185,
+  "widgetTokens": [],
+  "name": "PollenOverview",
+  "description": "",
+  "overwriteGroupFields": false,
+  "widgetsConfigVersion": 2,
+  "type": "dashboard",
+  "widgets": [
+    {
+      "position": {
+        "col": 5,
+        "sizex": 4,
+        "row": 1,
+        "sizey": 4
+      },
+      "config": {
+        "displaySettings": {},
+        "name": "Grass Index Overview",
+        "description": "",
+        "theme": "newSolidDarkBlue",
+        "interval": 3,
+        "graphInfo": {
+          "virtualDataPoints": [],
+          "minValue": 0,
+          "topX": 10,
+          "maxValue": 6,
+          "dataPoints": [{
+            "dataPointName": "grassIndex",
+            "instanceName": {
+              "isGlob": true,
+              "value": "*"
+            },
+            "dataSourceFullName": "PollenIndex",
+            "consolidateFunction": "average",
+            "display": {
+              "color": "Auto",
+              "legend": "##INSTANCE##",
+              "type": "line",
+              "option": "custom"
+            },
+            "name": "grassIndex",
+            "aggregateFunction": "SUM",
+            "deviceDisplayName": {
+              "isGlob": false,
+              "value": "ec2lincoll1.kendalllabdom.local"
+            },
+            "deviceGroupFullPath": {
+              "isGlob": true,
+              "value": "*"
+            }
+          }],
+          "verticalLabel": "Rating",
+          "aggregate": false,
+          "desc": true,
+          "scaleUnit": 1000,
+          "globalConsolidateFunction": "default"
+        },
+        "type": "cgraph",
+        "timescale": "7days",
+        "version": 2
+      }
+    },
+    {
+      "position": {
+        "col": 9,
+        "sizex": 4,
+        "row": 1,
+        "sizey": 4
+      },
+      "config": {
+        "displaySettings": {},
+        "name": "Weed Index Overview",
+        "description": "",
+        "theme": "newSolidDarkBlue",
+        "interval": 3,
+        "graphInfo": {
+          "virtualDataPoints": [],
+          "minValue": 0,
+          "topX": 10,
+          "maxValue": 6,
+          "dataPoints": [{
+            "dataPointName": "weedIndex",
+            "instanceName": {
+              "isGlob": true,
+              "value": "*"
+            },
+            "dataSourceFullName": "PollenIndex",
+            "consolidateFunction": "average",
+            "display": {
+              "color": "Auto",
+              "legend": "##INSTANCE##",
+              "type": "line",
+              "option": "custom"
+            },
+            "name": "weedIndex",
+            "aggregateFunction": "SUM",
+            "deviceDisplayName": {
+              "isGlob": false,
+              "value": "ec2lincoll1.kendalllabdom.local"
+            },
+            "deviceGroupFullPath": {
+              "isGlob": true,
+              "value": "*"
+            }
+          }],
+          "verticalLabel": "Rating",
+          "aggregate": false,
+          "desc": true,
+          "scaleUnit": 1000,
+          "globalConsolidateFunction": "default"
+        },
+        "type": "cgraph",
+        "timescale": "7days",
+        "version": 2
+      }
+    },
+    {
+      "position": {
+        "col": 1,
+        "sizex": 4,
+        "row": 1,
+        "sizey": 4
+      },
+      "config": {
+        "displaySettings": {},
+        "name": "Tree Index Overview",
+        "description": "",
+        "theme": "newSolidDarkBlue",
+        "interval": 3,
+        "graphInfo": {
+          "virtualDataPoints": [],
+          "minValue": 0,
+          "topX": 10,
+          "maxValue": 6,
+          "dataPoints": [{
+            "dataPointName": "treeIndex",
+            "instanceName": {
+              "isGlob": true,
+              "value": "*"
+            },
+            "dataSourceFullName": "PollenIndex",
+            "consolidateFunction": "average",
+            "display": {
+              "color": "Auto",
+              "legend": "##INSTANCE##",
+              "type": "line",
+              "option": "custom"
+            },
+            "name": "treeIndex",
+            "aggregateFunction": "SUM",
+            "deviceDisplayName": {
+              "isGlob": false,
+              "value": "ec2lincoll1.kendalllabdom.local"
+            },
+            "deviceGroupFullPath": {
+              "isGlob": true,
+              "value": "*"
+            }
+          }],
+          "verticalLabel": "Rating",
+          "aggregate": false,
+          "desc": true,
+          "scaleUnit": 1000,
+          "globalConsolidateFunction": "default"
+        },
+        "type": "cgraph",
+        "timescale": "7days",
+        "version": 2
+      }
+    },
+    {
+      "position": {
+        "col": 1,
+        "sizex": 4,
+        "row": 5,
+        "sizey": 5
+      },
+      "config": {
+        "ackChecked": true,
+        "displaySettings": {
+          "showTypeIcon": true,
+          "displayAs": "table"
+        },
+        "displayWarnAlert": true,
+        "description": "",
+        "type": "noc",
+        "version": 2,
+        "displayErrorAlert": true,
+        "displayColumn": 1,
+        "name": "Overall Tree Index Levels",
+        "displayCriticalAlert": true,
+        "theme": "newSolidDarkBlue",
+        "interval": 3,
+        "sortBy": "alertSeverity",
+        "timescale": "day",
+        "sdtChecked": true,
+        "items": [
+          {
+            "dataPointName": "treeIndex",
+            "instanceName": "PollenIndex-SantaBarbara,CA",
+            "name": "##INSTANCE##",
+            "dataSourceDisplayName": "PollenIndex",
+            "groupBy": "instance",
+            "type": "device",
+            "deviceGroupFullPath": "*",
+            "deviceDisplayName": "ec2lincoll1.kendalllabdom.local"
+          },
+          {
+            "dataPointName": "treeIndex",
+            "instanceName": "PollenIndex-NewYork,NY",
+            "name": "##INSTANCE##",
+            "dataSourceDisplayName": "PollenIndex",
+            "groupBy": "instance",
+            "type": "device",
+            "deviceGroupFullPath": "*",
+            "deviceDisplayName": "ec2lincoll1.kendalllabdom.local"
+          },
+          {
+            "dataPointName": "treeIndex",
+            "instanceName": "PollenIndex-LasVegas,NV",
+            "name": "##INSTANCE##",
+            "dataSourceDisplayName": "PollenIndex",
+            "groupBy": "instance",
+            "type": "device",
+            "deviceGroupFullPath": "*",
+            "deviceDisplayName": "ec2lincoll1.kendalllabdom.local"
+          },
+          {
+            "dataPointName": "treeIndex",
+            "instanceName": "PollenIndex-Chicago,IL",
+            "name": "##INSTANCE##",
+            "dataSourceDisplayName": "PollenIndex",
+            "groupBy": "instance",
+            "type": "device",
+            "deviceGroupFullPath": "*",
+            "deviceDisplayName": "ec2lincoll1.kendalllabdom.local"
+          },
+          {
+            "dataPointName": "treeIndex",
+            "instanceName": "PollenIndex-Cambridge,MA",
+            "name": "##INSTANCE##",
+            "dataSourceDisplayName": "PollenIndex",
+            "groupBy": "instance",
+            "type": "device",
+            "deviceGroupFullPath": "*",
+            "deviceDisplayName": "ec2lincoll1.kendalllabdom.local"
+          },
+          {
+            "dataPointName": "treeIndex",
+            "instanceName": "PollenIndex-Austin,TX",
+            "name": "##INSTANCE##",
+            "dataSourceDisplayName": "PollenIndex",
+            "groupBy": "instance",
+            "type": "device",
+            "deviceGroupFullPath": "*",
+            "deviceDisplayName": "ec2lincoll1.kendalllabdom.local"
+          },
+          {
+            "dataPointName": "treeIndex",
+            "instanceName": "PollenIndex-Atlanta,GA",
+            "name": "##INSTANCE##",
+            "dataSourceDisplayName": "PollenIndex",
+            "groupBy": "instance",
+            "type": "device",
+            "deviceGroupFullPath": "*",
+            "deviceDisplayName": "ec2lincoll1.kendalllabdom.local"
+          }
+        ]
+      }
+    },
+    {
+      "position": {
+        "col": 5,
+        "sizex": 8,
+        "row": 5,
+        "sizey": 5
+      },
+      "config": {
+        "displaySettings": {
+          "isShowAll": false,
+          "showFilter": false,
+          "columns": [
+            {
+              "visible": false,
+              "columnLabel": "Severity",
+              "columnKey": "alert-severity"
+            },
+            {
+              "visible": true,
+              "columnLabel": "Began",
+              "columnKey": "alert-began"
+            },
+            {
+              "visible": true,
+              "columnLabel": "Resource/Website",
+              "columnKey": "alert-device"
+            },
+            {
+              "visible": true,
+              "columnLabel": "LogicModule",
+              "columnKey": "alert-datasource"
+            },
+            {
+              "visible": true,
+              "columnLabel": "Instance",
+              "columnKey": "alert-datasource-instance"
+            },
+            {
+              "visible": true,
+              "columnLabel": "Datapoint",
+              "columnKey": "alert-datapoint"
+            },
+            {
+              "visible": true,
+              "columnLabel": "Value",
+              "columnKey": "alert-value"
+            },
+            {
+              "visible": true,
+              "columnLabel": "Static Threshold",
+              "columnKey": "alert-static-threshold"
+            },
+            {
+              "visible": true,
+              "columnLabel": "Dynamic Threshold",
+              "columnKey": "alert-dynamic-threshold"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Group",
+              "columnKey": "alert-group"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Notes",
+              "columnKey": "alert-notes"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Acknowledged By",
+              "columnKey": "alert-acked-by"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Acknowledged On",
+              "columnKey": "alert-acked-on"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Cleared On",
+              "columnKey": "alert-cleared-on"
+            },
+            {
+              "visible": false,
+              "columnLabel": "In SDT",
+              "columnKey": "alert-in-sdt"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Alert Rule",
+              "columnKey": "alert-rule-name"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Escalation Chain",
+              "columnKey": "alert-escalation-chain"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Instance Description",
+              "columnKey": "alert-datasource-instance-description"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Full Path",
+              "columnKey": "alert-full-path"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Routing State",
+              "columnKey": "alert-routing-state"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Dependency Role",
+              "columnKey": "alert-dependency-role"
+            },
+            {
+              "visible": false,
+              "columnLabel": "Dependent Alerts",
+              "columnKey": "alert-dependent-alerts"
+            }
+          ],
+          "playSound": {},
+          "fontsize": "normal-font",
+          "sort": "-startEpoch"
+        },
+        "name": "Alert List",
+        "description": "",
+        "theme": "newSolidDarkBlue",
+        "interval": 3,
+        "filters": {
+          "severity": "",
+          "sdted": "all",
+          "chain": "",
+          "instance": "",
+          "anomaly": "",
+          "dataPoint": "",
+          "rule": "",
+          "acked": "all",
+          "dependencyRoutingState": "",
+          "dependencyRole": "",
+          "host": "",
+          "keyword": "",
+          "dataSource": "",
+          "cleared": "no",
+          "group": "-myroot%2FAPI_Resources*"
+        },
+        "type": "alert",
+        "timescale": "day",
+        "version": 2
+      }
+    }
+  ],
+  "version": 2
+}

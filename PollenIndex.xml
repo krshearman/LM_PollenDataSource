@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<feed  version="1.0" hasPendingRequests="false" >
+  <company></company>
+  <status>200</status>
+  <errmsg>OK</errmsg>
+  <interval>0</interval>
+    <entry type="predatasource">
+        <version>1681732046</version>
+        <name>PollenIndex</name>
+        <displayedas>PollenIndex</displayedas>
+        <description>Written for April 2023 community Contest. Data is drawn from api.tomorrow.io. You can learn more about their free datasets here: https://docs.tomorrow.io/reference/weather-data-layers Rate limits do apply.</description>
+        <collector>script</collector>
+        <hasMultiInstances>true</hasMultiInstances>
+        <useWildValueAsUniqueIdentifier>false</useWildValueAsUniqueIdentifier>
+        <schedule>3600</schedule>
+        <appliesTo>hasCategory(&#34;api.tomorrow.io&#34;)</appliesTo>
+        <wildcardauto>true</wildcardauto>
+        <wildcardpersist>false</wildcardpersist>
+        <wildcardlinuxscript>ad_script</wildcardlinuxscript>
+        <wildcardlinuxcmdline>type=&#34;embeded&#34; </wildcardlinuxcmdline>
+        <wildcardwinscript>ad_script</wildcardwinscript>
+        <wildcardwincmdline>type=&#34;embeded&#34; </wildcardwincmdline>
+        <wildcardgroovyscript>import com.santaba.agent.groovyapi.expect.Expect;
+import com.santaba.agent.groovyapi.snmp.Snmp;
+import com.santaba.agent.groovyapi.http.*;
+import com.santaba.agent.groovyapi.jmx.*;
+import org.xbill.DNS.*;
+import groovy.json.JsonSlurper;
+
+//define variables
+def apikey = hostProps.get(&#34;geoapi.key&#34;);
+def locapi = &#34;api.opencagedata.com&#34;;
+                    
+//make location array
+//the value of &#34;location&#34; on device/device is a string of city names separated by semi-colons, i.e. Austin,TX;SantaBarbara,CA;NewYork,NY etc. 
+//or it can simply be one location set on a device i.e. Austin,TX
+//note: using anything other than a semi-colon to separate the city,state names will break this.
+
+def locations = hostProps.get(&#34;location&#34;);
+//println(locations)
+//splits the string at the semi-colon
+def locSplit = locations.split(&#34;;&#34;);
+//assigns each split value to locationList
+def locationList = [];
+for(i=0; i &#60; locSplit.size(); i++){
+    locationList[i] = locSplit[i].replaceAll(&#34; &#34;,&#34;&#34;);
+    }
+//creates instances of each city value from the locationList list                  
+for(i =0; i &#60; locationList.size(); i++){
+    def endpoint = &#34;https://api.opencagedata.com/geocode/v1/json?q=${locationList[i]}&#38;key=${apikey}&#38;language=en&#38;pretty=1&#34;;
+    def port = 80;
+    def httpClient = HTTP.open(locapi, port);
+    def response = httpClient.get(endpoint);
+    def statusCode = httpClient.getStatusCode();
+    httpClient.close();
+    if(statusCode == 200){
+        response = new JsonSlurper().parseText(httpClient.getResponseBody());
+        def citystate = locationList[i];
+        def latitude = response[&#39;results&#39;][0][&#39;geometry&#39;][&#39;lat&#39;];
+        def longitude = response[&#39;results&#39;][0][&#39;geometry&#39;][&#39;lng&#39;];
+        def id = citystate+&#34;##&#34;;
+        def desc = citystate+&#34;####&#34;;
+        def lat = &#34;auto.location.lat=${latitude}&#34;;
+        def lng = &#34;auto.location.lng=${longitude}&#34;;
+        println(id+id+desc+lat+&#34;&#38;&#34;+lng);
+        } else {
+            println(&#34;Your http get request was not successful. StatusCode = ${statusCode}&#34;);
+            
+        }
+}
+
+</wildcardgroovyscript>
+        <wildcardschedule>0</wildcardschedule>
+        <wildcarddisable>false</wildcarddisable>
+        <wildcarddeleteinactive>true</wildcarddeleteinactive>
+        <agdmethod>none</agdmethod>
+        <agdparams></agdparams>
+        <group></group>
+        <tags></tags>
+        <technology>Installation instructions:
+
+1) Become a free member and generate API keys at the following two sites:
+    For GeoLocation: https://opencagedata.com/
+    For Pollen data: https://tomorrow.io
+
+2) Give an existing resource/resource group these properties:
+
+    1) geoapi.key = &#60;api token from opencage.com&#62;
+    2) pollenapi.key = &#60;api token from tomorrow.io&#62;
+    3) location = &#60;This can be 1 city or an array of cities in the following format:  
+    City,ST;City,ST;City,ST; etc.&#62;
+    ** Note each City,ST string must be separated by a semi-colon (;). Example: 
+    Austin,TX;LasVegas,NV;...etc.
+    4) Append system.categories with the value api.tomorrow.io
+    
+
+3) The module is set to collect data hourly for each of 7 locations in the United States. Bear in mind that opencage.com and tomorrow.io both have rate limits in place, so you shouldn&#39;t try to collect data for more cities than rate limiting will allow or you will see No Data painted in the portal and errors may be thrown.
+
+5) Thresholds have been set for overall indexes - treeIndex, grassIndex, weedIndex.
+
+6) Poll values indicate current value of datapoint.
+
+7) More details can be found in the code comments.
+
+Ratings Explained:
+
+0: None
+
+1: Very low
+
+2: Low
+
+3: Medium
+
+4: High
+
+ 5: Very High</technology>
+        <adlist><![CDATA[{"agdmethod":"none","method":"ad_script","agdparams":"","id":0,"filters":[],"params":{"type":"embeded","groovyscript":"import com.santaba.agent.groovyapi.expect.Expect;\nimport com.santaba.agent.groovyapi.snmp.Snmp;\nimport com.santaba.agent.groovyapi.http.*;\nimport com.santaba.agent.groovyapi.jmx.*;\nimport org.xbill.DNS.*;\nimport groovy.json.JsonSlurper;\n\n//define variables\ndef apikey = hostProps.get(\"geoapi.key\");\ndef locapi = \"api.opencagedata.com\";\n                    \n//make location array\n//the value of \"location\" on device/device is a string of city names separated by semi-colons, i.e. Austin,TX;SantaBarbara,CA;NewYork,NY etc. \n//or it can simply be one location set on a device i.e. Austin,TX\n//note: using anything other than a semi-colon to separate the city,state names will break this.\n\ndef locations = hostProps.get(\"location\");\n//println(locations)\n//splits the string at the semi-colon\ndef locSplit = locations.split(\";\");\n//assigns each split value to locationList\ndef locationList = [];\nfor(i=0; i < locSplit.size(); i++){\n    locationList[i] = locSplit[i].replaceAll(\" \",\"\");\n    }\n//creates instances of each city value from the locationList list                  \nfor(i =0; i < locationList.size(); i++){\n    def endpoint = \"https://api.opencagedata.com/geocode/v1/json?q=${locationList[i]}&key=${apikey}&language=en&pretty=1\";\n    def port = 80;\n    def httpClient = HTTP.open(locapi, port);\n    def response = httpClient.get(endpoint);\n    def statusCode = httpClient.getStatusCode();\n    httpClient.close();\n    if(statusCode == 200){\n        response = new JsonSlurper().parseText(httpClient.getResponseBody());\n        def citystate = locationList[i];\n        def latitude = response['results'][0]['geometry']['lat'];\n        def longitude = response['results'][0]['geometry']['lng'];\n        def id = citystate+\"##\";\n        def desc = citystate+\"####\";\n        def lat = \"auto.location.lat=${latitude}\";\n        def lng = \"auto.location.lng=${longitude}\";\n        println(id+id+desc+lat+\"&\"+lng);\n        } else {\n            println(\"Your http get request was not successful. StatusCode = ${statusCode}\");\n            \n        }\n}\n\n"}}]]></adlist>
+        <schemaVersion>2</schemaVersion>
+        <dataSourceType>1</dataSourceType>
+        <attributes>
+        <attribute>
+            <name>scripttype</name>
+            <value>embed</value>
+            <comment></comment>
+        </attribute>
+        <attribute>
+            <name>scriptgroovy</name>
+            <value>import com.santaba.agent.groovyapi.expect.Expect;
+import com.santaba.agent.groovyapi.snmp.Snmp;
+import com.santaba.agent.groovyapi.http.*;
+import com.santaba.agent.groovyapi.jmx.*;
+import org.xbill.DNS.*;
+import groovy.json.*;
+
+//endpoint
+//&#39;https://api.tomorrow.io/v4/timelines?location=&#60;INSERTLAT_FLOAT&#62;,&#60;INSERTLNG_FLOAT&#62;&#38;fields=treeIndex,grassIndex,weedIndex,treeAcaciaIndex,treeAshIndex,treeBeechIndex,treeBirchIndex,treeCedarIndex,treeCypressIndex,treeElderIndex,treeElmIndex,treeHemlockIndex,treeHickoryIndex,treeJuniperIndex,treeMahoganyIndex,treeMapleIndex,treeMulberryIndex,treeOakIndex,treePineIndex,treeCottonwoodIndex,treeSpruceIndex,treeSycamoreIndex,treeWalnutIndex,treeWillowIndex,grassGrassIndex,weedRagweedIndex&#38;timesteps=current&#38;units=metric&#38;apikey=&#60;INSERTAPIKEY&#62;&#39;
+
+//define needed variables
+def pollenapi = &#34;api.tomorrow.io&#34;;
+def pollenapikey = hostProps.get(&#34;pollenapi.key&#34;);
+def pollenLocale = &#34;##WILDVALUE##&#34;;
+def lat = instanceProps.get(&#34;auto.location.lat&#34;);
+def lng = instanceProps.get(&#34;auto.location.lng&#34;);
+def endpointUrl = &#34;/v4/timelines?location=${lat},${lng}&#38;fields=treeIndex,grassIndex,weedIndex,treeAcaciaIndex,treeAshIndex,treeBeechIndex,treeBirchIndex,treeCedarIndex,treeCypressIndex,treeElderIndex,treeElmIndex,treeHemlockIndex,treeHickoryIndex,treeJuniperIndex,treeMahoganyIndex,treeMapleIndex,treeMulberryIndex,treeOakIndex,treePineIndex,treeCottonwoodIndex,treeSpruceIndex,treeSycamoreIndex,treeWalnutIndex,treeWillowIndex,grassGrassIndex,weedRagweedIndex&#38;timesteps=current&#38;units=metric&#38;apikey=${pollenapikey}&#34;;
+
+//get values for pollen indexes
+def httpClient = HTTP.open(pollenapi, 80);
+def response = httpClient.get(endpointUrl);
+httpClient.close();
+response = new JsonSlurper().parseText(httpClient.getResponseBody());
+def getVals = response[&#39;data&#39;][&#39;timelines&#39;][&#39;intervals&#39;][&#39;values&#39;][0];
+
+//process values into more easily iterable form than the non standard json received
+def rawVals = getVals.toString();
+def procStr_0 = rawVals.replaceAll(&#34;[\\[\\](){}]&#34;,&#34;&#34;);
+def procStr_1 = procStr_0.replaceAll(&#34;:&#34;, &#34;=&#34;);
+def vals = procStr_1.split(&#34;, &#34;);
+
+//print values for datapoints
+for(i=0; i &#60; vals.size(); i++){
+        println(vals[i]);
+    }
+
+return 0</value>
+            <comment></comment>
+        </attribute>
+        <attribute>
+            <name>windowsscript</name>
+            <value></value>
+            <comment></comment>
+        </attribute>
+        <attribute>
+            <name>linuxscript</name>
+            <value></value>
+            <comment></comment>
+        </attribute>
+        <attribute>
+            <name>windowscmdline</name>
+            <value></value>
+            <comment></comment>
+        </attribute>
+        <attribute>
+            <name>linuxcmdline</name>
+            <value></value>
+            <comment></comment>
+        </attribute>
+        <attribute>
+            <name>properties</name>
+            <value></value>
+            <comment></comment>
+        </attribute>
+        <attribute>
+            <name>manualConnections</name>
+            <value></value>
+            <comment></comment>
+        </attribute>
+        </attributes>
+        <datapoints>
+        <datapoint>
+            <name>grassGrassIndex</name>
+            <originId>3_yMHqURStiSbXvyK24K9Q</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>grassGrassIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>grassIndex</name>
+            <originId>3Dil-8RvTUihkUfmZRhcVg</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>grassIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr>= 3 4 5</alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeAcaciaIndex</name>
+            <originId>XSVHk5QYS_2aoLxkfw6Wzw</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeAcaciaIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeAshIndex</name>
+            <originId>h5u8VoHCR2yizjPkopw1vA</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeAshIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeBeechIndex</name>
+            <originId>Zh4BBn22TtydItrD2AwxJA</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeBeechIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeBirchIndex</name>
+            <originId>UzLlE-uJTTCPuTb2-bGgvw</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeBirchIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeCedarIndex</name>
+            <originId>OXYLdHSFS--L1lLXXHYe4w</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeCedarIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeCottonwoodIndex</name>
+            <originId>BtxOXastScuG20Z-sfKAIA</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeCottonwoodIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeCypressIndex</name>
+            <originId>blRLbihoS5WC6ZsAzIkqDw</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeCypressIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeElderIndex</name>
+            <originId>kgu1ezl1TUGKoM2yQPP66g</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeElderIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeElmIndex</name>
+            <originId>CdjTybnnTCK2tcVJ7uAXjQ</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeElmIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeHemlockIndex</name>
+            <originId>oazcYKlVQCKmNCUVvucfmg</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeHemlockIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeHickoryIndex</name>
+            <originId>ZZuOSYQqQ5KP06APkHWK0g</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeHickoryIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeIndex</name>
+            <originId>MAITUsCeTkyu0ya4Blr6kQ</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr>= 3 4 5</alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeJuniperIndex</name>
+            <originId>vBXEAGV3QF-HAane8LbqMw</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeJuniperIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeMahoganyIndex</name>
+            <originId>bk9-o7r4ToyKaujCX7tICA</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeMahoganyIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeMapleIndex</name>
+            <originId>8jamjPKmT_awpQTGq8JVVg</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeMapleIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeMulberryIndex</name>
+            <originId>6A_VhAWpRvGFDyn9oU4Bmg</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeMulberryIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeOakIndex</name>
+            <originId>hYTXNP3STXGjifcSlLi3-A</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeOakIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treePineIndex</name>
+            <originId>h5mh2VdSTx2ehGfzgDnJ9g</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treePineIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeSpruceIndex</name>
+            <originId>kjJJ5tsmS7mUY68PSYasPg</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeSpruceIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeSycamoreIndex</name>
+            <originId>GVod7Jm3QFWVyZTdbeCLyA</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeSycamoreIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeWalnutIndex</name>
+            <originId>6mmkkHuIQQiXR-7LuLfulg</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeWalnutIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>treeWillowIndex</name>
+            <originId>oyGwwqUfT5-rT7huBRbgGQ</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>treeWillowIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>weedIndex</name>
+            <originId>uw2-TNf7QwSxe3ILVuohyg</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>weedIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr>= 3 4 5</alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        <datapoint>
+            <name>weedRagweedIndex</name>
+            <originId>bA_jqNbxSquDZlc2HYj2Gw</originId>
+            <dataType>7</dataType>
+            <type>2</type>
+            <postprocessormethod>namevalue</postprocessormethod>
+            <postprocessorparam>weedRagweedIndex</postprocessorparam>
+            <usevalue>output</usevalue>
+            <alertexpr></alertexpr>
+            <alertmissing>1</alertmissing>
+            <alertsubject></alertsubject>
+            <alertbody></alertbody>
+            <enableanomalyalertsuppression></enableanomalyalertsuppression>
+            <adadvsettingenabled>false</adadvsettingenabled>
+            <warnadadvsetting></warnadadvsetting>
+            <erroradadvsetting></erroradadvsetting>
+            <criticaladadvsetting></criticaladadvsetting>
+            <description></description>
+            <maxvalue></maxvalue>
+            <minvalue>0</minvalue>
+            <userparam1></userparam1>
+            <userparam2></userparam2>
+            <userparam3></userparam3>
+            <iscomposite>false</iscomposite>
+            <rpn></rpn>
+            <alertTransitionIval>0</alertTransitionIval>
+            <alertClearTransitionIval>0</alertClearTransitionIval>
+        </datapoint>
+        </datapoints>
+        <graphs>
+        </graphs>
+        <overviewgraphs>
+        <overviewgraph>
+            <name>GrassIndexOverview</name>
+            <title>Grass Index Overview</title>
+            <verticallabel>Rating</verticallabel>
+            <rigid>false</rigid>
+            <maxvalue>6.0</maxvalue>
+            <minvalue>0.0</minvalue>
+            <displayprio>2</displayprio>
+            <timescale>1week</timescale>
+            <base1024>false</base1024>
+            <aggregated>false</aggregated>
+            <originId></originId>
+            <datapoints>
+        <overviewgraphdatapoint>
+            <name>grassIndex</name>
+            <datapointname>grassIndex</datapointname>
+            <cf>1</cf>
+            <aggregateMethod>average</aggregateMethod>
+            <originId></originId>
+        </overviewgraphdatapoint>
+            </datapoints>
+            <virtualdatapoints>
+            </virtualdatapoints>
+            <lines>
+            <overviewgraphline>
+                <type>1</type>
+                <legend>##INSTANCE##</legend>
+                <datapointname>grassIndex</datapointname>
+                <isvirtualdatapoint>false</isvirtualdatapoint>
+                <color>silver</color>
+            </overviewgraphline>
+            </lines>
+        </overviewgraph>
+        <overviewgraph>
+            <name>TreeIndexOverview</name>
+            <title>Tree Index Overview</title>
+            <verticallabel>Rating</verticallabel>
+            <rigid>false</rigid>
+            <maxvalue>6.0</maxvalue>
+            <minvalue>0.0</minvalue>
+            <displayprio>1</displayprio>
+            <timescale>1week</timescale>
+            <base1024>false</base1024>
+            <aggregated>false</aggregated>
+            <originId></originId>
+            <datapoints>
+        <overviewgraphdatapoint>
+            <name>treeIndex</name>
+            <datapointname>treeIndex</datapointname>
+            <cf>1</cf>
+            <aggregateMethod>average</aggregateMethod>
+            <originId></originId>
+        </overviewgraphdatapoint>
+            </datapoints>
+            <virtualdatapoints>
+            </virtualdatapoints>
+            <lines>
+            <overviewgraphline>
+                <type>1</type>
+                <legend>##INSTANCE##</legend>
+                <datapointname>treeIndex</datapointname>
+                <isvirtualdatapoint>false</isvirtualdatapoint>
+                <color>silver</color>
+            </overviewgraphline>
+            </lines>
+        </overviewgraph>
+        <overviewgraph>
+            <name>WeedIndexOverview</name>
+            <title>Weed Index Overview</title>
+            <verticallabel>Rating</verticallabel>
+            <rigid>false</rigid>
+            <maxvalue>6.0</maxvalue>
+            <minvalue>0.0</minvalue>
+            <displayprio>3</displayprio>
+            <timescale>1week</timescale>
+            <base1024>false</base1024>
+            <aggregated>false</aggregated>
+            <originId></originId>
+            <datapoints>
+        <overviewgraphdatapoint>
+            <name>weedIndex</name>
+            <datapointname>weedIndex</datapointname>
+            <cf>1</cf>
+            <aggregateMethod>average</aggregateMethod>
+            <originId></originId>
+        </overviewgraphdatapoint>
+            </datapoints>
+            <virtualdatapoints>
+            </virtualdatapoints>
+            <lines>
+            <overviewgraphline>
+                <type>1</type>
+                <legend>##INSTANCE##</legend>
+                <datapointname>weedIndex</datapointname>
+                <isvirtualdatapoint>false</isvirtualdatapoint>
+                <color>silver</color>
+            </overviewgraphline>
+            </lines>
+        </overviewgraph>
+        </overviewgraphs>
+        <scripts>
+        </scripts>
+    </entry>
+</feed>
